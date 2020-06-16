@@ -20,8 +20,7 @@ namespace FlightMobileApp.Controllers
         // POST: api/command
         [HttpPost]
         public void PostCommand(Command command)
-        {
-            Console.WriteLine("ddddddd");
+        {   
             appManager.sendCommand(command);
         }
     }
