@@ -23,6 +23,7 @@ namespace FlightMobileApp.Controllers
         [HttpGet]
         public IActionResult GetScreenshot()
         {
+
             byte []b = appManager.getScreenshot();
             return File(b, "image/png");
         }
