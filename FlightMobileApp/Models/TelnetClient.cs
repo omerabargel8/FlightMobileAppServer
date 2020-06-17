@@ -43,8 +43,6 @@ namespace FlightMobileApp.Models
             {
                 throw new NullReferenceException();
             }
-
-
         }
         //reads data from server
         public string read()

@@ -46,37 +46,49 @@ namespace FlightMobileApp.Models
         }
         public void sendCommand(Command command)
         {
-            string returnedVal;
-            try
-            {
-                telnetClient.write("set /controls/flight/aileron " + command.Aileron + "\r\n");
-                telnetClient.write("get /controls/flight/aileron\r\n");
-                returnedVal = telnetClient.read();
-                if (Double.Parse(returnedVal) != command.Aileron)
-                    Console.WriteLine("Problem");
-                ////
-                telnetClient.write("set /controls/flight/rudder " + command.Rudder + "\r\n");
-                telnetClient.write("get /controls/flight/rudder\r\n");
-                returnedVal = telnetClient.read();
-                if (Double.Parse(returnedVal) != command.Rudder)
-                    Console.WriteLine("Problem");
-                /////
-                telnetClient.write("set /controls/flight/elevator " + command.Elevator + "\r\n");
-                telnetClient.write("get /controls/flight/elevator\r\n");
-                returnedVal = telnetClient.read();
-                if (Double.Parse(returnedVal) != command.Elevator)
-                    Console.WriteLine("Problem");
-                /////
-                telnetClient.write("set /controls/engines/current-engine/throttle " + command.Throttle + "\r\n");
-                telnetClient.write("get /controls/engines/current-engine/throttle\r\n");
-                returnedVal = telnetClient.read();
-                if (Double.Parse(returnedVal) != command.Throttle)
-                    Console.WriteLine("Problem");
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Unable to write to server");
-            }
-        }
+            new Thread(delegate () { 
+                string returnedVal;
+                double retVal;
+                try
+                {
+                    mutex.WaitOne();
+                    telnetClient.write("set /controls/flight/aileron " + command.Aileron + "\r\n");
+                    telnetClient.write("get /controls/flight/aileron\r\n");
+                    returnedVal = telnetClient.read();
+                    double.TryParse(returnedVal, out retVal);
+                    if (Double.Parse(returnedVal) != command.Aileron)
+                        Console.WriteLine("Problem");
+                    mutex.ReleaseMutex();
+                    ////
+                    mutex.WaitOne();
+                    telnetClient.write("set /controls/flight/rudder " + command.Rudder + "\r\n");
+                    telnetClient.write("get /controls/flight/rudder\r\n");
+                    returnedVal = telnetClient.read();
+                    if (Double.Parse(returnedVal) != command.Rudder)
+                        Console.WriteLine("Problem");
+                    mutex.ReleaseMutex();
+                    /////
+                    mutex.WaitOne();
+                    telnetClient.write("set /controls/flight/elevator " + command.Elevator + "\r\n");
+                    telnetClient.write("get /controls/flight/elevator\r\n");
+                    returnedVal = telnetClient.read();
+                    if (Double.Parse(returnedVal) != command.Elevator)
+                        Console.WriteLine("Problem");
+                    mutex.ReleaseMutex();
+                    /////
+                    mutex.WaitOne();
+                    telnetClient.write("set /controls/engines/current-engine/throttle " + command.Throttle + "\r\n");
+                    telnetClient.write("get /controls/engines/current-engine/throttle\r\n");
+                    returnedVal = telnetClient.read();
+                    if (double.Parse(returnedVal) != command.Throttle)
+                        Console.WriteLine("Problem");
+                    mutex.ReleaseMutex();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Unable to write to server");
+                }
+        }).Start();
+    }
     }
 }
