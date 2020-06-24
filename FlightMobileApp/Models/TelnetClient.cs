@@ -30,6 +30,7 @@ namespace FlightMobileApp.Models
         //send to server the command received
         public void write(string command)
         {
+            Console.WriteLine(command);
             try
             {
                 Byte[] message = System.Text.Encoding.ASCII.GetBytes(command);

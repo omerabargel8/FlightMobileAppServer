@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FlightMobileApp.Models;
 using Microsoft.AspNetCore.Http;
@@ -19,9 +21,17 @@ namespace FlightMobileApp.Controllers
         }
         // POST: api/command
         [HttpPost]
-        public void PostCommand(Command command)
-        {   
-            appManager.sendCommand(command);
+        public HttpResponseMessage PostCommand(Command command)
+        {
+            try
+            {
+                appManager.sendCommand(command);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
         }
     }
 }

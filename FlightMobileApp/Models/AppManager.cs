@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace FlightMobileApp.Models
 {
@@ -15,12 +16,17 @@ namespace FlightMobileApp.Models
     {
         ITelnetClient telnetClient;
         private Mutex mutex = new Mutex();
-        public AppManager()
+        string url;
+
+        public AppManager(IConfiguration config)
         {
             this.telnetClient = new TelnetClient();
             try
             {
-                this.telnetClient.connect("localhost", 5002);
+                string ip = config.GetConnectionString("ip");
+                int port = int.Parse(config.GetConnectionString("port"));
+                url = config["urls"];
+                this.telnetClient.connect(ip, port);
                 telnetClient.write("data\n");
             }
             catch
@@ -30,8 +36,6 @@ namespace FlightMobileApp.Models
         }
         public Byte[] getScreenshot()
         {
-            string url = "http://localhost:5000/screenshot";
-            //string url = String.Format("http" + "://localhost:5000/screenshot");
             WebRequest requset = WebRequest.Create(url);
             HttpWebResponse respond = null;
             respond = (HttpWebResponse)requset.GetResponse();
